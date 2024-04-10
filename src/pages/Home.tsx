@@ -1,24 +1,30 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
+import "./Home.css";
+import Layout from "../components/Layout";
+import { IonToolbar, useIonRouter } from "@ionic/react";
+import { useEffect, useState } from "react";
+import Intro from "../components/Intro";
+import { Preferences } from "@capacitor/preferences";
 
 const Home: React.FC = () => {
+  const router = useIonRouter();
+
+  const handleFinishLogin = async () =>
+    Preferences.set({ key: "finish-login", value: "done" });
+
+  useEffect(() => {
+    const checkStorage = async () => {
+      const seen = await Preferences.get({ key: "finish-login" });
+      if (seen.value === "done") router.push("/login");
+    };
+    checkStorage();
+  }, []);
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Blank</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer />
-      </IonContent>
-    </IonPage>
+    <Layout
+      footer={<IonToolbar>Hey there</IonToolbar>}
+      title="Well this is something"
+    >
+      <Intro handleFinishLogin={handleFinishLogin} />
+    </Layout>
   );
 };
 
